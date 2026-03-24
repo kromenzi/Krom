@@ -1,0 +1,127 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "A user of the marketplace (buyer, factory owner, or admin).",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "Firebase Auth UID" },
+        "email": { "type": "string", "format": "email" },
+        "displayName": { "type": "string" },
+        "photoURL": { "type": "string" },
+        "role": { "type": "string", "enum": ["buyer", "factory", "admin"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "email", "role", "createdAt"]
+    },
+    "Factory": {
+      "title": "Factory",
+      "description": "A factory profile on the marketplace.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "ownerId": { "type": "string", "description": "UID of the user who owns this factory" },
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "country": { "type": "string" },
+        "certifications": { "type": "array", "items": { "type": "string" } },
+        "exportReady": { "type": "boolean" },
+        "contactEmail": { "type": "string", "format": "email" },
+        "contactPhone": { "type": "string" },
+        "status": { "type": "string", "enum": ["pending", "approved", "rejected"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "ownerId", "name", "country", "status", "createdAt"]
+    },
+    "Product": {
+      "title": "Product",
+      "description": "An industrial product listed by a factory.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "factoryId": { "type": "string", "description": "ID of the factory that owns this product" },
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "category": { "type": "string" },
+        "specifications": { "type": "object", "additionalProperties": { "type": "string" } },
+        "moq": { "type": "number", "description": "Minimum Order Quantity" },
+        "pricingTiers": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "minQty": { "type": "number" },
+              "price": { "type": "number" }
+            },
+            "required": ["minQty", "price"]
+          }
+        },
+        "hidePrice": { "type": "boolean" },
+        "incoterms": { "type": "array", "items": { "type": "string" } },
+        "leadTime": { "type": "string" },
+        "images": { "type": "array", "items": { "type": "string", "format": "uri" } },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "factoryId", "name", "category", "moq", "createdAt"]
+    },
+    "RFQ": {
+      "title": "Request for Quotation",
+      "description": "A request for quotation sent by a buyer to a factory.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "buyerId": { "type": "string", "description": "UID of the buyer" },
+        "factoryId": { "type": "string", "description": "ID of the factory" },
+        "productId": { "type": "string", "description": "ID of the product (optional)" },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "quantity": { "type": "number" },
+        "targetPrice": { "type": "number" },
+        "status": { "type": "string", "enum": ["pending", "quoted", "accepted", "rejected", "cancelled"] },
+        "attachments": { "type": "array", "items": { "type": "string", "format": "uri" } },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "buyerId", "factoryId", "title", "quantity", "status", "createdAt"]
+    },
+    "Quote": {
+      "title": "Quote",
+      "description": "A quote sent by a factory in response to an RFQ.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "rfqId": { "type": "string" },
+        "factoryId": { "type": "string" },
+        "buyerId": { "type": "string" },
+        "price": { "type": "number" },
+        "leadTime": { "type": "string" },
+        "incoterms": { "type": "array", "items": { "type": "string" } },
+        "notes": { "type": "string" },
+        "status": { "type": "string", "enum": ["pending", "accepted", "rejected"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "rfqId", "factoryId", "buyerId", "price", "status", "createdAt"]
+    }
+  },
+  "firestore": {
+    "users/{userId}": {
+      "schema": { "$ref": "#/entities/User" },
+      "description": "Stores user profiles."
+    },
+    "factories/{factoryId}": {
+      "schema": { "$ref": "#/entities/Factory" },
+      "description": "Stores factory profiles."
+    },
+    "products/{productId}": {
+      "schema": { "$ref": "#/entities/Product" },
+      "description": "Stores products listed by factories."
+    },
+    "rfqs/{rfqId}": {
+      "schema": { "$ref": "#/entities/RFQ" },
+      "description": "Stores requests for quotations."
+    },
+    "quotes/{quoteId}": {
+      "schema": { "$ref": "#/entities/Quote" },
+      "description": "Stores quotes sent by factories."
+    }
+  }
+}
