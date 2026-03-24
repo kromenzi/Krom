@@ -23,7 +23,7 @@ export function Navbar() {
             <div className={`hidden md:flex ${dir === 'rtl' ? 'mr-10 space-x-reverse' : 'ml-10'} space-x-8`}>
               <Link href="/products" className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">{t('nav.products')}</Link>
               <Link href="/factories" className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">{t('nav.factories')}</Link>
-              <Link href="/rfq" className="text-emerald-400 hover:text-emerald-300 px-3 py-2 rounded-md text-sm font-medium">{t('nav.rfq')}</Link>
+              <Link href={profile ? "/dashboard/rfq/new" : "/rfq"} className="text-emerald-400 hover:text-emerald-300 px-3 py-2 rounded-md text-sm font-medium">{t('nav.rfq')}</Link>
             </div>
           </div>
           
@@ -83,7 +83,7 @@ export function Navbar() {
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
             <Link href="/products" className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-slate-700">Products</Link>
             <Link href="/factories" className="block px-3 py-2 rounded-md text-base font-medium text-gray-300 hover:text-white hover:bg-slate-700">Factories</Link>
-            <Link href="/rfq" className="block px-3 py-2 rounded-md text-base font-medium text-emerald-400 hover:text-emerald-300 hover:bg-slate-700">Post RFQ</Link>
+            <Link href={profile ? "/dashboard/rfq/new" : "/rfq"} className="block px-3 py-2 rounded-md text-base font-medium text-emerald-400 hover:text-emerald-300 hover:bg-slate-700">Post RFQ</Link>
             
             {profile ? (
               <>
