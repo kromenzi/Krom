@@ -56,7 +56,7 @@ export default function NewRFQPage() {
       setIsSuccess(true);
     } catch (error) {
       console.error('Error submitting RFQ:', error);
-      alert('Failed to submit RFQ. Please try again.');
+      alert(t('rfq.submit_error'));
     } finally {
       setIsSubmitting(false);
     }
@@ -68,20 +68,20 @@ export default function NewRFQPage() {
         <motion.div 
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="max-w-md w-full bg-white rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-100 p-10 text-center"
+          className="max-w-md w-full gulf-card p-10 text-center"
         >
-          <div className="w-20 h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-8">
+          <div className="w-20 h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-8 shadow-inner">
             <CheckCircle2 className="w-10 h-10" />
           </div>
-          <h2 className="text-2xl font-black text-slate-900 mb-4">
+          <h2 className="text-3xl font-black text-slate-900 mb-4">
             {t('rfq.success')}
           </h2>
-          <p className="text-slate-500 mb-10 font-medium leading-relaxed">
+          <p className="text-slate-500 mb-10 font-medium leading-relaxed text-lg">
             {t('rfq.success_desc')}
           </p>
           <Link
             href="/dashboard/rfqs"
-            className="block w-full bg-emerald-600 text-white py-4 px-6 rounded-2xl font-bold hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-200"
+            className="gulf-button-primary block w-full py-5 text-lg"
           >
             {t('rfq.view_my')}
           </Link>
@@ -108,11 +108,11 @@ export default function NewRFQPage() {
         </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="bg-white rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-100 overflow-hidden">
+      <form onSubmit={handleSubmit} className="gulf-card overflow-hidden">
         <div className="p-8 space-y-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div className="col-span-1 md:col-span-2">
-              <label htmlFor="title" className="block text-sm font-bold text-slate-700 mb-2">
+              <label htmlFor="title" className="block text-sm font-bold text-slate-700 mb-3 px-1">
                 {t('rfq.product_name')} *
               </label>
               <input
@@ -122,13 +122,13 @@ export default function NewRFQPage() {
                 required
                 value={formData.title}
                 onChange={handleChange}
-                className={`w-full px-5 py-4 rounded-2xl bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-emerald-500 focus:bg-white outline-none transition-all font-medium`}
-                placeholder={dir === 'rtl' ? 'مثال: مواسير فولاذية صناعية' : "e.g., Industrial Grade Steel Pipes"}
+                className="gulf-input"
+                placeholder={t('rfq.title_placeholder')}
               />
             </div>
 
             <div>
-              <label htmlFor="category" className="block text-sm font-bold text-slate-700 mb-2">
+              <label htmlFor="category" className="block text-sm font-bold text-slate-700 mb-3 px-1">
                 {t('rfq.category')} *
               </label>
               <select
@@ -137,20 +137,20 @@ export default function NewRFQPage() {
                 required
                 value={formData.category}
                 onChange={handleChange}
-                className={`w-full px-5 py-4 rounded-2xl bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-emerald-500 focus:bg-white outline-none transition-all font-medium appearance-none`}
+                className="gulf-input appearance-none"
               >
                 <option value="">{t('rfq.select_category')}</option>
-                <option value="Construction Materials">{dir === 'rtl' ? 'مواد البناء' : 'Construction Materials'}</option>
-                <option value="Petrochemicals">{dir === 'rtl' ? 'البتروكيماويات' : 'Petrochemicals'}</option>
-                <option value="Machinery & Equipment">{dir === 'rtl' ? 'الآلات والمعدات' : 'Machinery & Equipment'}</option>
-                <option value="Plastics & Packaging">{dir === 'rtl' ? 'البلاستيك والتغليف' : 'Plastics & Packaging'}</option>
-                <option value="Metals & Alloys">{dir === 'rtl' ? 'المعادن والسبائك' : 'Metals & Alloys'}</option>
-                <option value="Other">{dir === 'rtl' ? 'أخرى' : 'Other'}</option>
+                <option value="Construction Materials">{t('rfq.category.construction')}</option>
+                <option value="Petrochemicals">{t('rfq.category.petrochemicals')}</option>
+                <option value="Machinery & Equipment">{t('rfq.category.machinery')}</option>
+                <option value="Plastics & Packaging">{t('rfq.category.plastics')}</option>
+                <option value="Metals & Alloys">{t('rfq.category.metals')}</option>
+                <option value="Other">{t('rfq.category.other')}</option>
               </select>
             </div>
 
             <div>
-              <label htmlFor="quantity" className="block text-sm font-bold text-slate-700 mb-2">
+              <label htmlFor="quantity" className="block text-sm font-bold text-slate-700 mb-3 px-1">
                 {t('rfq.quantity')} *
               </label>
               <input
@@ -161,13 +161,13 @@ export default function NewRFQPage() {
                 min="1"
                 value={formData.quantity}
                 onChange={handleChange}
-                className={`w-full px-5 py-4 rounded-2xl bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-emerald-500 focus:bg-white outline-none transition-all font-medium`}
-                placeholder="e.g., 1000"
+                className="gulf-input"
+                placeholder={t('rfq.quantity_placeholder')}
               />
             </div>
 
             <div className="col-span-1 md:col-span-2">
-              <label htmlFor="targetPrice" className="block text-sm font-bold text-slate-700 mb-2">
+              <label htmlFor="targetPrice" className="block text-sm font-bold text-slate-700 mb-3 px-1">
                 {t('rfq.target_price')}
               </label>
               <input
@@ -178,13 +178,13 @@ export default function NewRFQPage() {
                 step="0.01"
                 value={formData.targetPrice}
                 onChange={handleChange}
-                className={`w-full px-5 py-4 rounded-2xl bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-emerald-500 focus:bg-white outline-none transition-all font-medium`}
-                placeholder="e.g., 50.00"
+                className="gulf-input"
+                placeholder={t('rfq.price_placeholder')}
               />
             </div>
 
             <div className="col-span-1 md:col-span-2">
-              <label htmlFor="description" className="block text-sm font-bold text-slate-700 mb-2">
+              <label htmlFor="description" className="block text-sm font-bold text-slate-700 mb-3 px-1">
                 {t('rfq.description')} *
               </label>
               <textarea
@@ -194,13 +194,13 @@ export default function NewRFQPage() {
                 rows={6}
                 value={formData.description}
                 onChange={handleChange}
-                className={`w-full px-5 py-4 rounded-2xl bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-emerald-500 focus:bg-white outline-none transition-all font-medium resize-none`}
-                placeholder={dir === 'rtl' ? 'صف مواصفات المنتج، المواد، الشهادات المطلوبة، الجدول الزمني للتسليم، إلخ.' : "Describe the product specifications, materials, certifications required, delivery timeline, etc."}
+                className="gulf-input resize-none"
+                placeholder={t('rfq.desc_placeholder')}
               />
             </div>
 
             <div className="col-span-1 md:col-span-2">
-              <label className="block text-sm font-bold text-slate-700 mb-4">
+              <label className="block text-sm font-bold text-slate-700 mb-4 px-1">
                 {t('rfq.attachments')}
               </label>
               <FileUpload 
@@ -213,11 +213,11 @@ export default function NewRFQPage() {
           </div>
         </div>
 
-        <div className="p-8 bg-slate-50 border-t border-slate-100 flex justify-end">
+        <div className="p-8 bg-slate-50/50 border-t border-slate-100 flex justify-end">
           <button
             type="submit"
             disabled={isSubmitting}
-            className="bg-emerald-600 text-white py-4 px-10 rounded-2xl font-bold hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-200 disabled:opacity-70 disabled:cursor-not-allowed flex items-center gap-3"
+            className="gulf-button-primary px-12 py-4 flex items-center gap-3"
           >
             {isSubmitting ? (
               <>

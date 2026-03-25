@@ -17,7 +17,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   if (loading) {
-    return <div className="min-h-screen flex items-center justify-center bg-slate-50">Loading...</div>;
+    return <div className="min-h-screen flex items-center justify-center bg-slate-50">{t('dashboard.loading')}</div>;
   }
 
   if (!profile) {
@@ -26,7 +26,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <Navbar />
         <div className="flex-grow flex items-center justify-center">
           <div className="text-center">
-            <h2 className="text-2xl font-bold text-slate-900 mb-4">Please sign in to access your dashboard</h2>
+            <h2 className="text-2xl font-bold text-slate-900 mb-4">{t('dashboard.signin_required')}</h2>
           </div>
         </div>
         <Footer />
@@ -49,10 +49,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     { name: t('nav.messages'), href: '/dashboard/messages', icon: MessageSquare },
     { name: t('nav.settings'), href: '/dashboard/settings', icon: Settings },
     ...(profile.role === 'admin' ? [
-      { name: 'Admin Users', href: '/dashboard/admin/users', icon: Settings },
-      { name: 'Admin Factories', href: '/dashboard/admin/factories', icon: Building2 },
-      { name: 'Admin Products', href: '/dashboard/admin/products', icon: Package },
-      { name: 'Admin RFQs', href: '/dashboard/admin/rfqs', icon: FileText },
+      { name: t('admin.users'), href: '/dashboard/admin/users', icon: Settings },
+      { name: t('admin.factories'), href: '/dashboard/admin/factories', icon: Building2 },
+      { name: t('admin.products'), href: '/dashboard/admin/products', icon: Package },
+      { name: t('admin.rfqs'), href: '/dashboard/admin/rfqs', icon: FileText },
     ] : []),
   ];
 
@@ -128,10 +128,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               <div className="p-6 pt-0">
                 <div className="bg-slate-900 rounded-2xl p-4 text-white relative overflow-hidden group">
                   <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-500/10 rounded-full -mr-12 -mt-12 transition-transform group-hover:scale-150 duration-700"></div>
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-emerald-400 mb-1">Support</p>
-                  <p className="text-xs text-slate-300 mb-3">Need help with your factory profile?</p>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-emerald-400 mb-1">{t('dashboard.support')}</p>
+                  <p className="text-xs text-slate-300 mb-3">{t('dashboard.support_desc')}</p>
                   <button className="w-full py-2 bg-white/10 hover:bg-white/20 rounded-xl text-xs font-bold transition-colors">
-                    Contact Agent
+                    {t('dashboard.contact_agent')}
                   </button>
                 </div>
               </div>
@@ -140,7 +140,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
           {/* Main Content */}
           <main className="flex-grow min-w-0">
-            <div className="bg-white rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-100 p-6 sm:p-8 min-h-[600px]">
+            <div className="min-h-[600px]">
               {children}
             </div>
           </main>

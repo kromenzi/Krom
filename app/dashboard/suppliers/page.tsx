@@ -1,6 +1,7 @@
 'use client';
 
 import { useAuth } from '@/contexts/AuthContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { db } from '@/lib/firebase';
 import { collection, getDocs, query, where, addDoc } from 'firebase/firestore';
 import { Building2, Search, MapPin, Star, MessageSquare, ExternalLink } from 'lucide-react';
@@ -10,6 +11,7 @@ import Image from 'next/image';
 
 export default function SavedSuppliersDashboard() {
   const { profile } = useAuth();
+  const { t, dir } = useLanguage();
   const [suppliers, setSuppliers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -69,32 +71,31 @@ export default function SavedSuppliersDashboard() {
       }
     } catch (error) {
       console.error('Error initiating chat:', error);
-      alert('Failed to initiate chat.');
     }
   };
 
   if (!profile || profile.role !== 'buyer') return null;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" dir={dir}>
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Saved Suppliers</h1>
-          <p className="text-slate-600 mt-1">Manage your favorite factories and quick contacts.</p>
+          <h1 className="text-2xl font-bold text-slate-900">{t('suppliers.title')}</h1>
+          <p className="text-slate-600 mt-1">{t('suppliers.subtitle')}</p>
         </div>
         <Link href="/factories" className="bg-white border border-slate-300 hover:bg-slate-50 text-slate-700 px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2">
-          <Search className="w-4 h-4" /> Find More
+          <Search className="w-4 h-4" /> {t('suppliers.find_more')}
         </Link>
       </div>
 
       <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
         <div className="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
           <div className="relative w-full max-w-md">
-            <Search className="absolute left-3 rtl:left-auto rtl:right-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
+            <Search className="absolute inset-inline-start-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
             <input 
               type="text" 
-              placeholder="Search saved suppliers..." 
-              className="w-full pl-9 pr-4 rtl:pr-9 rtl:pl-4 py-2 rounded-md border border-slate-300 text-sm focus:ring-2 focus:ring-emerald-500 outline-none"
+              placeholder={t('suppliers.search_placeholder')} 
+              className="w-full px-10 py-2 rounded-md border border-slate-300 text-sm focus:ring-2 focus:ring-emerald-500 outline-none"
             />
           </div>
         </div>
@@ -122,7 +123,7 @@ export default function SavedSuppliersDashboard() {
                     <h3 className="text-lg font-bold text-slate-900 truncate">{supplier.name}</h3>
                     {supplier.isVerified && (
                       <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold bg-blue-50 text-blue-700 uppercase tracking-wider border border-blue-200">
-                        Verified
+                        {t('suppliers.verified')}
                       </span>
                     )}
                   </div>
@@ -138,13 +139,13 @@ export default function SavedSuppliersDashboard() {
                     href={`/factories/${supplier.id}`}
                     className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-white border border-slate-300 text-slate-700 rounded-lg text-sm font-medium hover:bg-slate-50 transition-colors"
                   >
-                    <ExternalLink className="w-4 h-4" /> Profile
+                    <ExternalLink className="w-4 h-4" /> {t('suppliers.profile')}
                   </Link>
                   <button 
                     onClick={() => handleMessageSupplier(supplier.id, supplier.name)}
                     className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-emerald-600 text-white rounded-lg text-sm font-medium hover:bg-emerald-700 transition-colors"
                   >
-                    <MessageSquare className="w-4 h-4" /> Message
+                    <MessageSquare className="w-4 h-4" /> {t('suppliers.message')}
                   </button>
                 </div>
               </div>
@@ -153,10 +154,10 @@ export default function SavedSuppliersDashboard() {
         ) : (
           <div className="p-12 text-center">
             <Building2 className="w-12 h-12 text-slate-300 mx-auto mb-4" />
-            <h3 className="text-lg font-bold text-slate-900 mb-2">No saved suppliers</h3>
-            <p className="text-slate-500 mb-6">You haven&apos;t saved any factories to your list yet.</p>
+            <h3 className="text-lg font-bold text-slate-900 mb-2">{t('suppliers.no_suppliers')}</h3>
+            <p className="text-slate-500 mb-6">{t('suppliers.no_suppliers_desc')}</p>
             <Link href="/factories" className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
-              <Search className="w-4 h-4" /> Browse Factories
+              <Search className="w-4 h-4" /> {t('suppliers.browse')}
             </Link>
           </div>
         )}

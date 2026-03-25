@@ -129,27 +129,27 @@ export default function FactoryProfileDashboard() {
 
   return (
     <div className="max-w-5xl mx-auto space-y-8 pb-12" dir={dir}>
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
-          <h1 className="text-3xl font-bold text-slate-900 tracking-tight">{t('profile.title')}</h1>
-          <p className="text-slate-500 mt-1">{t('profile.subtitle')}</p>
+          <h1 className="text-4xl font-black text-slate-900 tracking-tight">{t('profile.title')}</h1>
+          <p className="text-slate-500 mt-2 text-lg font-medium">{t('profile.subtitle')}</p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-4">
           {success && (
             <motion.span 
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
-              className="flex items-center gap-1 text-emerald-600 text-sm font-bold"
+              className="flex items-center gap-2 text-emerald-600 text-sm font-black uppercase tracking-widest"
             >
-              <CheckCircle2 className="w-4 h-4" /> {t('common.success')}
+              <CheckCircle2 className="w-5 h-5" /> {t('common.success')}
             </motion.span>
           )}
           <button
             onClick={handleSubmit}
             disabled={saving}
-            className="flex items-center gap-2 px-6 py-2.5 bg-emerald-600 text-white rounded-xl font-bold hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-200 disabled:opacity-50"
+            className="gulf-button-primary px-8 py-3 flex items-center gap-3"
           >
-            {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+            {saving ? <Loader2 className="w-5 h-5 animate-spin" /> : <Save className="w-5 h-5" />}
             {saving ? t('common.loading') : t('profile.save')}
           </button>
         </div>
@@ -158,19 +158,19 @@ export default function FactoryProfileDashboard() {
       <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Left Column: Branding & Media */}
         <div className="space-y-8">
-          <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm space-y-6">
-            <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
-              <ImageIcon className="w-5 h-5 text-emerald-600" />
+          <div className="gulf-card p-8 space-y-8">
+            <h3 className="text-xl font-black text-slate-900 flex items-center gap-3 uppercase tracking-widest">
+              <ImageIcon className="w-6 h-6 text-emerald-600" />
               {t('profile.branding')}
             </h3>
             
             <div className="space-y-4">
-              <label className="block text-sm font-bold text-slate-700">{t('profile.logo')}</label>
-              <div className="aspect-square w-32 mx-auto rounded-2xl bg-slate-50 border-2 border-dashed border-slate-200 flex items-center justify-center overflow-hidden relative group">
+              <label className="block text-sm font-black text-slate-700 uppercase tracking-widest px-1">{t('profile.logo')}</label>
+              <div className="aspect-square w-40 mx-auto rounded-3xl bg-slate-50 border-2 border-dashed border-slate-200 flex items-center justify-center overflow-hidden relative group shadow-inner">
                 {formData.logo ? (
                   <Image src={formData.logo} alt="Logo" fill className="object-cover" referrerPolicy="no-referrer" />
                 ) : (
-                  <Building2 className="w-10 h-10 text-slate-300" />
+                  <Building2 className="w-12 h-12 text-slate-300" />
                 )}
               </div>
               <FileUpload 
@@ -183,12 +183,12 @@ export default function FactoryProfileDashboard() {
             </div>
 
             <div className="space-y-4 pt-4">
-              <label className="block text-sm font-bold text-slate-700">{t('profile.banner')}</label>
-              <div className="aspect-video w-full rounded-2xl bg-slate-50 border-2 border-dashed border-slate-200 flex items-center justify-center overflow-hidden relative">
+              <label className="block text-sm font-black text-slate-700 uppercase tracking-widest px-1">{t('profile.banner')}</label>
+              <div className="aspect-video w-full rounded-3xl bg-slate-50 border-2 border-dashed border-slate-200 flex items-center justify-center overflow-hidden relative shadow-inner">
                 {formData.banner ? (
                   <Image src={formData.banner} alt="Banner" fill className="object-cover" referrerPolicy="no-referrer" />
                 ) : (
-                  <ImageIcon className="w-10 h-10 text-slate-300" />
+                  <ImageIcon className="w-12 h-12 text-slate-300" />
                 )}
               </div>
               <FileUpload 
@@ -205,39 +205,39 @@ export default function FactoryProfileDashboard() {
         {/* Right Column: Details */}
         <div className="lg:col-span-2 space-y-8">
           {/* Basic Info */}
-          <div className="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm space-y-6">
-            <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
-              <Building2 className="w-5 h-5 text-emerald-600" />
+          <div className="gulf-card p-8 space-y-8">
+            <h3 className="text-xl font-black text-slate-900 flex items-center gap-3 uppercase tracking-widest">
+              <Building2 className="w-6 h-6 text-emerald-600" />
               {t('profile.basic_info')}
             </h3>
             
-            <div className="grid grid-cols-1 gap-6">
-              <div className="space-y-2">
-                <label className="text-sm font-bold text-slate-700">{t('product.name')} *</label>
+            <div className="grid grid-cols-1 gap-8">
+              <div className="space-y-3">
+                <label className="text-sm font-black text-slate-700 uppercase tracking-widest px-1">{t('product.name')} *</label>
                 <div className="relative">
-                  <Building2 className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                  <Building2 className="absolute inset-inline-start-5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
                   <input
                     type="text"
                     name="name"
                     required
                     value={formData.name}
                     onChange={handleChange}
-                    className="w-full pl-12 pr-4 py-3 rounded-xl bg-slate-50 border-none focus:ring-2 focus:ring-emerald-500 outline-none transition-all"
-                    placeholder="Factory Name"
+                    className="gulf-input px-14"
+                    placeholder={t('profile.name_placeholder')}
                   />
                 </div>
               </div>
-              <div className="space-y-2">
-                <label className="text-sm font-bold text-slate-700">{t('product.description')}</label>
+              <div className="space-y-3">
+                <label className="text-sm font-black text-slate-700 uppercase tracking-widest px-1">{t('product.description')}</label>
                 <div className="relative">
-                  <FileText className="absolute left-4 top-4 w-4 h-4 text-slate-400" />
+                  <FileText className="absolute inset-inline-start-5 top-6 w-5 h-5 text-slate-400" />
                   <textarea
                     name="description"
                     rows={4}
                     value={formData.description}
                     onChange={handleChange}
-                    className="w-full pl-12 pr-4 py-3 rounded-xl bg-slate-50 border-none focus:ring-2 focus:ring-emerald-500 outline-none transition-all resize-none"
-                    placeholder="Describe your factory and production capabilities"
+                    className="gulf-input px-14 resize-none"
+                    placeholder={t('profile.desc_placeholder')}
                   />
                 </div>
               </div>
@@ -245,66 +245,66 @@ export default function FactoryProfileDashboard() {
           </div>
 
           {/* Contact Details */}
-          <div className="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm space-y-6">
-            <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
-              <Globe className="w-5 h-5 text-emerald-600" />
+          <div className="gulf-card p-8 space-y-8">
+            <h3 className="text-xl font-black text-slate-900 flex items-center gap-3 uppercase tracking-widest">
+              <Globe className="w-6 h-6 text-emerald-600" />
               {t('profile.contact_details')}
             </h3>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <label className="text-sm font-bold text-slate-700">{t('profile.contact_details')}</label>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="space-y-3">
+                <label className="text-sm font-black text-slate-700 uppercase tracking-widest px-1">{t('profile.email')}</label>
                 <div className="relative">
-                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                  <Mail className="absolute inset-inline-start-5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
                   <input
                     type="email"
                     name="email"
                     value={formData.email}
                     onChange={handleChange}
-                    className="w-full pl-12 pr-4 py-3 rounded-xl bg-slate-50 border-none focus:ring-2 focus:ring-emerald-500 outline-none transition-all"
-                    placeholder="Email address"
+                    className="gulf-input px-14"
+                    placeholder={t('profile.email_placeholder')}
                   />
                 </div>
               </div>
-              <div className="space-y-2">
-                <label className="text-sm font-bold text-slate-700">{t('profile.contact_details')}</label>
+              <div className="space-y-3">
+                <label className="text-sm font-black text-slate-700 uppercase tracking-widest px-1">{t('profile.phone')}</label>
                 <div className="relative">
-                  <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                  <Phone className="absolute inset-inline-start-5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
                   <input
                     type="tel"
                     name="phone"
                     value={formData.phone}
                     onChange={handleChange}
-                    className="w-full pl-12 pr-4 py-3 rounded-xl bg-slate-50 border-none focus:ring-2 focus:ring-emerald-500 outline-none transition-all"
-                    placeholder="Phone number"
+                    className="gulf-input px-14"
+                    placeholder={t('profile.phone_placeholder')}
                   />
                 </div>
               </div>
-              <div className="space-y-2">
-                <label className="text-sm font-bold text-slate-700">{t('profile.contact_details')}</label>
+              <div className="space-y-3">
+                <label className="text-sm font-black text-slate-700 uppercase tracking-widest px-1">{t('profile.website')}</label>
                 <div className="relative">
-                  <Globe className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                  <Globe className="absolute inset-inline-start-5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
                   <input
                     type="url"
                     name="website"
                     value={formData.website}
                     onChange={handleChange}
-                    className="w-full pl-12 pr-4 py-3 rounded-xl bg-slate-50 border-none focus:ring-2 focus:ring-emerald-500 outline-none transition-all"
+                    className="gulf-input px-14"
                     placeholder="https://www.example.com"
                   />
                 </div>
               </div>
-              <div className="space-y-2 md:col-span-2">
-                <label className="text-sm font-bold text-slate-700">{t('profile.contact_details')}</label>
+              <div className="space-y-3 md:col-span-2">
+                <label className="text-sm font-black text-slate-700 uppercase tracking-widest px-1">{t('profile.address')}</label>
                 <div className="relative">
-                  <MapPin className="absolute left-4 top-4 w-4 h-4 text-slate-400" />
+                  <MapPin className="absolute inset-inline-start-5 top-6 w-5 h-5 text-slate-400" />
                   <textarea
                     name="address"
                     rows={2}
                     value={formData.address}
                     onChange={handleChange}
-                    className="w-full pl-12 pr-4 py-3 rounded-xl bg-slate-50 border-none focus:ring-2 focus:ring-emerald-500 outline-none transition-all resize-none"
-                    placeholder="Physical address"
+                    className="gulf-input px-14 resize-none"
+                    placeholder={t('profile.address_placeholder')}
                   />
                 </div>
               </div>
@@ -312,61 +312,61 @@ export default function FactoryProfileDashboard() {
           </div>
 
           {/* Capabilities & Stats */}
-          <div className="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm space-y-6">
-            <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
-              <Award className="w-5 h-5 text-emerald-600" />
+          <div className="gulf-card p-8 space-y-8">
+            <h3 className="text-xl font-black text-slate-900 flex items-center gap-3 uppercase tracking-widest">
+              <Award className="w-6 h-6 text-emerald-600" />
               {t('profile.capabilities')}
             </h3>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <label className="text-sm font-bold text-slate-700">Year Established</label>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="space-y-3">
+                <label className="text-sm font-black text-slate-700 uppercase tracking-widest px-1">{t('profile.year_established')}</label>
                 <div className="relative">
-                  <Building2 className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                  <Building2 className="absolute inset-inline-start-5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
                   <input
                     type="text"
                     name="yearEstablished"
                     value={formData.yearEstablished}
                     onChange={handleChange}
-                    className="w-full pl-12 pr-4 py-3 rounded-xl bg-slate-50 border-none focus:ring-2 focus:ring-emerald-500 outline-none transition-all"
-                    placeholder="e.g., 1995"
+                    className="gulf-input px-14"
+                    placeholder={t('profile.year_placeholder')}
                   />
                 </div>
               </div>
-              <div className="space-y-2">
-                <label className="text-sm font-bold text-slate-700">Employee Count</label>
+              <div className="space-y-3">
+                <label className="text-sm font-black text-slate-700 uppercase tracking-widest px-1">{t('profile.employee_count')}</label>
                 <div className="relative">
-                  <Users className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                  <Users className="absolute inset-inline-start-5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
                   <input
                     type="text"
                     name="employeeCount"
                     value={formData.employeeCount}
                     onChange={handleChange}
-                    className="w-full pl-12 pr-4 py-3 rounded-xl bg-slate-50 border-none focus:ring-2 focus:ring-emerald-500 outline-none transition-all"
-                    placeholder="e.g., 100-500"
+                    className="gulf-input px-14"
+                    placeholder={t('profile.employee_placeholder')}
                   />
                 </div>
               </div>
-              <div className="col-span-1 md:col-span-2 space-y-2">
-                <label className="text-sm font-bold text-slate-700">Certifications (comma separated)</label>
+              <div className="col-span-1 md:col-span-2 space-y-3">
+                <label className="text-sm font-black text-slate-700 uppercase tracking-widest px-1">{t('profile.certifications')}</label>
                 <input
                   type="text"
                   name="certifications"
                   value={formData.certifications}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 rounded-xl bg-slate-50 border-none focus:ring-2 focus:ring-emerald-500 outline-none transition-all"
-                  placeholder="ISO 9001, CE, SASO..."
+                  className="gulf-input"
+                  placeholder={t('profile.cert_placeholder')}
                 />
               </div>
-              <div className="col-span-1 md:col-span-2 space-y-2">
-                <label className="text-sm font-bold text-slate-700">Core Capabilities (comma separated)</label>
+              <div className="col-span-1 md:col-span-2 space-y-3">
+                <label className="text-sm font-black text-slate-700 uppercase tracking-widest px-1">{t('profile.core_capabilities')}</label>
                 <input
                   type="text"
                   name="capabilities"
                   value={formData.capabilities}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 rounded-xl bg-slate-50 border-none focus:ring-2 focus:ring-emerald-500 outline-none transition-all"
-                  placeholder="CNC Machining, Injection Molding, Assembly..."
+                  className="gulf-input"
+                  placeholder={t('profile.cap_placeholder')}
                 />
               </div>
             </div>

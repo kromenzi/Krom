@@ -100,7 +100,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         await setDoc(docRef, newProfile);
         setProfile(newProfile);
       }
-    } catch (error) {
+    } catch (error: any) {
+      if (error.code === 'auth/popup-closed-by-user') {
+        console.log('User closed the sign-in popup.');
+        return;
+      }
       console.error('Error signing in with Google:', error);
       throw error;
     }

@@ -1,14 +1,17 @@
 'use client';
 
 import { useAuth } from '@/contexts/AuthContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { db } from '@/lib/firebase';
 import { doc, updateDoc } from 'firebase/firestore';
-import { User, Building2, Mail, Phone, MapPin, Globe, Save, Shield } from 'lucide-react';
+import { User, Building2, Mail, Phone, MapPin, Globe, Save, Shield, CheckCircle2, AlertCircle } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
 export default function SettingsDashboard() {
   const { profile } = useAuth();
+  const { t, dir } = useLanguage();
   const [loading, setLoading] = useState(false);
+  const [status, setStatus] = useState<{ type: 'success' | 'error', message: string } | null>(null);
   const [formData, setFormData] = useState({
     name: '',
     companyName: '',
@@ -36,16 +39,18 @@ export default function SettingsDashboard() {
     if (!profile) return;
 
     setLoading(true);
+    setStatus(null);
     try {
       const collectionName = profile.role === 'factory' ? 'factories' : 'users';
       await updateDoc(doc(db, collectionName, profile.uid), {
         ...formData,
         updatedAt: new Date().toISOString(),
       });
-      alert('Profile updated successfully!');
+      setStatus({ type: 'success', message: t('settings.success') });
+      setTimeout(() => setStatus(null), 5000);
     } catch (error) {
       console.error('Error updating profile:', error);
-      alert('Failed to update profile.');
+      setStatus({ type: 'error', message: t('settings.error') });
     } finally {
       setLoading(false);
     }
@@ -56,10 +61,21 @@ export default function SettingsDashboard() {
   const isFactory = profile.role === 'factory';
 
   return (
-    <div className="max-w-4xl space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-slate-900">Account Settings</h1>
-        <p className="text-slate-600 mt-1">Manage your profile and preferences.</p>
+    <div className="max-w-4xl space-y-6" dir={dir}>
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900">{t('settings.title')}</h1>
+          <p className="text-slate-600 mt-1">{t('settings.subtitle')}</p>
+        </div>
+        
+        {status && (
+          <div className={`flex items-center gap-3 px-6 py-3 rounded-2xl border animate-in fade-in slide-in-from-top-4 duration-300 ${
+            status.type === 'success' ? 'bg-emerald-50 border-emerald-100 text-emerald-700' : 'bg-rose-50 border-rose-100 text-rose-700'
+          }`}>
+            {status.type === 'success' ? <CheckCircle2 className="w-5 h-5" /> : <AlertCircle className="w-5 h-5" />}
+            <span className="text-sm font-bold">{status.message}</span>
+          </div>
+        )}
       </div>
 
       <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
@@ -73,7 +89,7 @@ export default function SettingsDashboard() {
               <Mail className="w-4 h-4" /> {profile.email}
             </p>
             <div className="mt-2 inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-slate-100 text-slate-700 text-xs font-semibold border border-slate-200 uppercase tracking-wider">
-              <Shield className="w-3 h-3" /> {profile.role} Account
+              <Shield className="w-3 h-3" /> {t('settings.account_type')}
             </div>
           </div>
         </div>
@@ -82,31 +98,31 @@ export default function SettingsDashboard() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Common Fields */}
             <div className="space-y-4">
-              <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider border-b pb-2">Personal Info</h3>
+              <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider border-b pb-2">{t('settings.personal_info')}</h3>
               
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Full Name</label>
+                <label className="block text-sm font-medium text-slate-700 mb-1">{t('settings.full_name')}</label>
                 <div className="relative">
-                  <User className="absolute left-3 rtl:left-auto rtl:right-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
+                  <User className="absolute inset-inline-start-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
                   <input
                     type="text"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="w-full pl-10 pr-4 rtl:pr-10 rtl:pl-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none"
+                    className="w-full px-10 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Phone Number</label>
+                <label className="block text-sm font-medium text-slate-700 mb-1">{t('settings.phone_number')}</label>
                 <div className="relative">
-                  <Phone className="absolute left-3 rtl:left-auto rtl:right-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
+                  <Phone className="absolute inset-inline-start-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
                   <input
                     type="tel"
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    className="w-full pl-10 pr-4 rtl:pr-10 rtl:pl-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none"
-                    placeholder="+966 5X XXX XXXX"
+                    className="w-full px-10 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none"
+                    placeholder={t('settings.phone_placeholder')}
                   />
                 </div>
               </div>
@@ -114,49 +130,49 @@ export default function SettingsDashboard() {
 
             {/* Business Fields */}
             <div className="space-y-4">
-              <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider border-b pb-2">Business Info</h3>
+              <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider border-b pb-2">{t('settings.business_info')}</h3>
               
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Company Name</label>
+                <label className="block text-sm font-medium text-slate-700 mb-1">{t('settings.company_name')}</label>
                 <div className="relative">
-                  <Building2 className="absolute left-3 rtl:left-auto rtl:right-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
+                  <Building2 className="absolute inset-inline-start-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
                   <input
                     type="text"
                     value={formData.companyName}
                     onChange={(e) => setFormData({ ...formData, companyName: e.target.value })}
-                    className="w-full pl-10 pr-4 rtl:pr-10 rtl:pl-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none"
+                    className="w-full px-10 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none"
                   />
                 </div>
               </div>
 
               {!isFactory && (
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Business Type</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">{t('settings.business_type')}</label>
                   <select
                     value={formData.businessType}
                     onChange={(e) => setFormData({ ...formData, businessType: e.target.value })}
                     className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none bg-white"
                   >
-                    <option value="">Select Type</option>
-                    <option value="wholesaler">Wholesaler</option>
-                    <option value="contractor">Contractor</option>
-                    <option value="distributor">Distributor</option>
-                    <option value="retailer">Retailer</option>
-                    <option value="other">Other</option>
+                    <option value="">{t('settings.select_type')}</option>
+                    <option value="wholesaler">{t('settings.wholesaler')}</option>
+                    <option value="contractor">{t('settings.contractor')}</option>
+                    <option value="distributor">{t('settings.distributor')}</option>
+                    <option value="retailer">{t('settings.retailer')}</option>
+                    <option value="other">{t('settings.other')}</option>
                   </select>
                 </div>
               )}
 
               {isFactory && (
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Website</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">{t('settings.website')}</label>
                   <div className="relative">
-                    <Globe className="absolute left-3 rtl:left-auto rtl:right-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
+                    <Globe className="absolute inset-inline-start-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
                     <input
                       type="url"
                       value={formData.website}
                       onChange={(e) => setFormData({ ...formData, website: e.target.value })}
-                      className="w-full pl-10 pr-4 rtl:pr-10 rtl:pl-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none"
+                      className="w-full px-10 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none"
                       placeholder="https://www.example.com"
                     />
                   </div>
@@ -167,15 +183,15 @@ export default function SettingsDashboard() {
             {/* Full Width Fields */}
             <div className="col-span-1 md:col-span-2 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Address</label>
+                <label className="block text-sm font-medium text-slate-700 mb-1">{t('settings.address')}</label>
                 <div className="relative">
-                  <MapPin className="absolute left-3 rtl:left-auto rtl:right-3 top-3 text-slate-400 w-4 h-4" />
+                  <MapPin className="absolute inset-inline-start-3 top-3 text-slate-400 w-4 h-4" />
                   <textarea
                     rows={3}
                     value={formData.address}
                     onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                    className="w-full pl-10 pr-4 rtl:pr-10 rtl:pl-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none resize-none"
-                    placeholder="Full business address"
+                    className="w-full px-10 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none resize-none"
+                    placeholder={t('settings.address_placeholder')}
                   />
                 </div>
               </div>
@@ -193,7 +209,7 @@ export default function SettingsDashboard() {
               ) : (
                 <Save className="w-4 h-4" />
               )}
-              {loading ? 'Saving...' : 'Save Changes'}
+              {loading ? t('settings.saving') : t('settings.save_changes')}
             </button>
           </div>
         </form>

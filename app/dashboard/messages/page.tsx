@@ -146,7 +146,7 @@ function MessagesContent() {
     try {
       const messageData = {
         senderId: profile.uid,
-        text: fileUrl ? (fileType === 'image' ? 'Sent an image' : 'Sent a video') : messageText,
+        text: fileUrl ? (fileType === 'image' ? t('messages.sent_image') : t('messages.sent_video')) : messageText,
         createdAt: serverTimestamp(),
         type: fileUrl ? fileType : 'text',
         fileUrl: fileUrl || null,
@@ -190,7 +190,7 @@ function MessagesContent() {
   const otherParticipantName = activeChat?.participantNames?.[otherParticipantId] || 'User';
 
   return (
-    <div className="h-[calc(100vh-12rem)] flex bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+    <div className="h-[calc(100vh-12rem)] flex bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden" dir={dir}>
       {/* Chat List Sidebar */}
       <aside className={`${isMobileView && activeChatId ? 'hidden' : 'flex'} w-full lg:w-80 flex-col border-r rtl:border-r-0 rtl:border-l border-slate-100`}>
         <div className="p-4 border-b border-slate-100">
@@ -222,12 +222,12 @@ function MessagesContent() {
                 <div className="flex-1 min-w-0">
                   <div className="flex justify-between items-baseline mb-1">
                     <h3 className="font-bold text-slate-900 truncate">{otherName}</h3>
-                    <span className="text-[10px] text-slate-400 flex-shrink-0 ml-2">{formatTime(chat.lastMessageTime)}</span>
+                    <span className={`text-[10px] text-slate-400 flex-shrink-0 ${dir === 'rtl' ? 'mr-2' : 'ml-2'}`}>{formatTime(chat.lastMessageTime)}</span>
                   </div>
                   <p className="text-xs text-slate-500 truncate">{chat.lastMessage}</p>
                 </div>
                 {unread > 0 && (
-                  <div className="absolute right-4 rtl:left-4 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full bg-emerald-600 text-white text-[10px] font-bold flex items-center justify-center flex-shrink-0">
+                  <div className="absolute inset-inline-end-4 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full bg-emerald-600 text-white text-[10px] font-bold flex items-center justify-center flex-shrink-0">
                     {unread}
                   </div>
                 )}
@@ -260,7 +260,7 @@ function MessagesContent() {
                 </div>
                 <div>
                   <h3 className="font-bold text-slate-900">{otherParticipantName}</h3>
-                  <p className="text-[10px] text-emerald-600 font-bold uppercase tracking-wider">Online</p>
+                  <p className="text-[10px] text-emerald-600 font-bold uppercase tracking-wider">{t('messages.online')}</p>
                 </div>
               </div>
               <div className="flex items-center gap-1">
@@ -327,7 +327,7 @@ function MessagesContent() {
               {showFileUpload && (
                 <div className="mb-4 p-4 bg-slate-50 rounded-xl border border-dashed border-slate-200">
                   <div className="flex justify-between items-center mb-2">
-                    <h4 className="text-xs font-bold text-slate-500 uppercase">Upload Media</h4>
+                    <h4 className="text-xs font-bold text-slate-500 uppercase">{t('messages.upload_media')}</h4>
                     <button onClick={() => setShowFileUpload(false)} className="text-slate-400 hover:text-slate-600">
                       <X className="w-4 h-4" />
                     </button>
@@ -336,7 +336,7 @@ function MessagesContent() {
                     onUploadComplete={handleFileUpload}
                     maxFiles={1}
                     folder={`chats/${activeChatId}`}
-                    label="Drop image or video here"
+                    label={t('messages.drop_file')}
                   />
                 </div>
               )}
@@ -379,7 +379,7 @@ function MessagesContent() {
               </div>
               <h3 className="text-xl font-bold text-slate-900 mb-2">{t('messages.select_chat')}</h3>
               <p className="text-slate-500 text-sm leading-relaxed">
-                Connect with manufacturers and buyers to discuss requirements, quotes, and delivery timelines.
+                {t('messages.select_chat_desc')}
               </p>
             </div>
           </div>
@@ -390,8 +390,9 @@ function MessagesContent() {
 }
 
 export default function MessagesDashboard() {
+  const { t } = useLanguage();
   return (
-    <Suspense fallback={<div className="p-8 text-center">Loading messages...</div>}>
+    <Suspense fallback={<div className="p-8 text-center">{t('dashboard.loading')}</div>}>
       <MessagesContent />
     </Suspense>
   );

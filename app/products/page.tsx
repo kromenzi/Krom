@@ -1,33 +1,72 @@
 'use client';
 
-import { Navbar } from '@/components/Navbar';
-import { Footer } from '@/components/Footer';
-import Link from 'next/link';
-import Image from 'next/image';
-import { Search, Filter, ChevronDown, Package, ShieldCheck } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { db } from '@/lib/firebase';
 import { collection, getDocs } from 'firebase/firestore';
+import { GoogleGenAI } from '@google/genai';
+import { Search, Filter, ChevronDown, Package, ShieldCheck, Upload, X, Loader2 } from 'lucide-react';
+import Link from 'next/link';
+import Image from 'next/image';
+import { Navbar } from '@/components/Navbar';
+import { Footer } from '@/components/Footer';
 
 export default function ProductsPage() {
   const [products, setProducts] = useState<any[]>([]);
+  const [filteredProducts, setFilteredProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isSearching, setIsSearching] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const querySnapshot = await getDocs(collection(db, 'products'));
-        const productData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        setProducts(productData);
-      } catch (error) {
-        console.error('Error fetching products:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+    if (!query) {
+      setFilteredProducts(products);
+      return;
+    }
+    const lowerQuery = query.toLowerCase();
+    setFilteredProducts(products.filter(p => 
+      p.name?.toLowerCase().includes(lowerQuery) || 
+      p.sku?.toLowerCase().includes(lowerQuery) ||
+      p.description?.toLowerCase().includes(lowerQuery)
+    ));
+  };
 
-    fetchProducts();
-  }, []);
+  const handleImageSearch = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files || e.target.files.length === 0) return;
+    const file = e.target.files[0];
+    setIsSearching(true);
+
+    try {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onloadend = async () => {
+        const base64Image = reader.result as string;
+        const ai = new GoogleGenAI({ apiKey: process.env.NEXT_PUBLIC_GEMINI_API_KEY! });
+        
+        const response = await ai.models.generateContent({
+          model: 'gemini-3.1-flash-image-preview',
+          contents: {
+            parts: [
+              { text: 'Identify the product in this image and return its name or SKU if possible. If you cannot identify it, return "unknown".' },
+              { inlineData: { mimeType: file.type, data: base64Image.split(',')[1] } }
+            ]
+          }
+        });
+        
+        const identifiedProduct = response.text?.trim();
+        if (identifiedProduct && identifiedProduct !== 'unknown') {
+          handleSearch(identifiedProduct);
+        } else {
+          alert('Could not identify the product from the image.');
+        }
+        setIsSearching(false);
+      };
+    } catch (error) {
+      console.error('Error searching by image:', error);
+      setIsSearching(false);
+    }
+  };
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50">
@@ -43,13 +82,19 @@ export default function ProductsPage() {
                 <Search className="absolute left-4 rtl:left-auto rtl:right-4 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5" />
                 <input 
                   type="text" 
-                  placeholder="Search products by name, category, or specifications..." 
-                  className="w-full pl-12 pr-4 rtl:pr-12 rtl:pl-4 py-3 rounded-lg bg-white text-slate-900 focus:ring-2 focus:ring-emerald-500 outline-none"
+                  value={searchQuery}
+                  onChange={(e) => handleSearch(e.target.value)}
+                  placeholder="Search products by name, SKU, or description..." 
+                  className="w-full pl-12 pr-12 rtl:pr-12 rtl:pl-12 py-3 rounded-lg bg-white text-slate-900 focus:ring-2 focus:ring-emerald-500 outline-none"
                 />
+                <button 
+                  onClick={() => fileInputRef.current?.click()}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-emerald-500"
+                >
+                  {isSearching ? <Loader2 className="w-5 h-5 animate-spin" /> : <Upload className="w-5 h-5" />}
+                </button>
+                <input type="file" ref={fileInputRef} onChange={handleImageSearch} className="hidden" accept="image/*" />
               </div>
-              <button className="bg-emerald-600 hover:bg-emerald-500 text-white px-8 py-3 rounded-lg font-semibold transition-colors whitespace-nowrap">
-                Search
-              </button>
             </div>
           </div>
         </div>
@@ -113,7 +158,7 @@ export default function ProductsPage() {
             {/* Product Grid */}
             <div className="flex-grow">
               <div className="flex justify-between items-center mb-6">
-                <p className="text-slate-600 text-sm">Showing {products.length} products</p>
+                <p className="text-slate-600 text-sm">Showing {filteredProducts.length} products</p>
                 <select className="border border-slate-300 rounded-lg px-3 py-1.5 text-sm text-slate-700 bg-white focus:ring-2 focus:ring-emerald-500 outline-none">
                   <option>Most Relevant</option>
                   <option>Newest Arrivals</option>
@@ -126,9 +171,9 @@ export default function ProductsPage() {
                 <div className="flex justify-center items-center h-64">
                   <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600"></div>
                 </div>
-              ) : products.length > 0 ? (
+              ) : filteredProducts.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {products.map((product) => (
+                  {filteredProducts.map((product) => (
                     <div key={product.id} className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-md transition-shadow group flex flex-col">
                       <Link href={`/products/${product.id}`} className="block relative h-48 bg-slate-100 overflow-hidden">
                         <Image
