@@ -10,7 +10,12 @@
         "displayName": { "type": "string" },
         "photoURL": { "type": "string" },
         "role": { "type": "string", "enum": ["buyer", "factory", "admin"] },
-        "createdAt": { "type": "string", "format": "date-time" }
+        "createdAt": { "type": "string", "format": "date-time" },
+        "companyName": { "type": "string" },
+        "phone": { "type": "string" },
+        "address": { "type": "string" },
+        "website": { "type": "string" },
+        "businessType": { "type": "string" }
       },
       "required": ["uid", "email", "role", "createdAt"]
     },
@@ -29,6 +34,9 @@
         "contactEmail": { "type": "string", "format": "email" },
         "contactPhone": { "type": "string" },
         "status": { "type": "string", "enum": ["pending", "approved", "rejected"] },
+        "logo": { "type": "string", "format": "uri" },
+        "coverImage": { "type": "string", "format": "uri" },
+        "media": { "type": "array", "items": { "type": "string", "format": "uri" } },
         "createdAt": { "type": "string", "format": "date-time" }
       },
       "required": ["id", "ownerId", "name", "country", "status", "createdAt"]
@@ -60,6 +68,7 @@
         "incoterms": { "type": "array", "items": { "type": "string" } },
         "leadTime": { "type": "string" },
         "images": { "type": "array", "items": { "type": "string", "format": "uri" } },
+        "videos": { "type": "array", "items": { "type": "string", "format": "uri" } },
         "createdAt": { "type": "string", "format": "date-time" }
       },
       "required": ["id", "factoryId", "name", "category", "moq", "createdAt"]
@@ -100,6 +109,64 @@
         "createdAt": { "type": "string", "format": "date-time" }
       },
       "required": ["id", "rfqId", "factoryId", "buyerId", "price", "status", "createdAt"]
+    },
+    "Chat": {
+      "title": "Chat",
+      "description": "A conversation between two users.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "participants": { "type": "array", "items": { "type": "string" } },
+        "participantNames": { "type": "object", "additionalProperties": { "type": "string" } },
+        "lastMessage": { "type": "string" },
+        "lastMessageTime": { "type": "string", "format": "date-time" },
+        "unreadCount": { "type": "object", "additionalProperties": { "type": "number" } }
+      },
+      "required": ["id", "participants", "lastMessageTime"]
+    },
+    "Message": {
+      "title": "Message",
+      "description": "A single message in a chat.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "senderId": { "type": "string" },
+        "text": { "type": "string" },
+        "attachments": { "type": "array", "items": { "type": "string", "format": "uri" } },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "senderId", "text", "createdAt"]
+    },
+    "Stream": {
+      "title": "Live Stream",
+      "description": "A live stream session by a factory.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "factoryId": { "type": "string" },
+        "title": { "type": "string" },
+        "status": { "type": "string", "enum": ["live", "ended"] },
+        "featuredProductId": { "type": "string" },
+        "viewerCount": { "type": "number" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "factoryId", "status", "createdAt"]
+    },
+    "Upload": {
+      "title": "Upload",
+      "description": "A record of a file upload.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "url": { "type": "string", "format": "uri" },
+        "fileName": { "type": "string" },
+        "mimeType": { "type": "string" },
+        "size": { "type": "number" },
+        "purpose": { "type": "string", "enum": ["product_image", "product_video", "factory_media", "rfq_attachment", "message_attachment"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "userId", "url", "fileName", "createdAt"]
     }
   },
   "firestore": {
@@ -122,6 +189,22 @@
     "quotes/{quoteId}": {
       "schema": { "$ref": "#/entities/Quote" },
       "description": "Stores quotes sent by factories."
+    },
+    "chats/{chatId}": {
+      "schema": { "$ref": "#/entities/Chat" },
+      "description": "Stores conversations between users."
+    },
+    "chats/{chatId}/messages/{messageId}": {
+      "schema": { "$ref": "#/entities/Message" },
+      "description": "Stores messages within a chat."
+    },
+    "streams/{streamId}": {
+      "schema": { "$ref": "#/entities/Stream" },
+      "description": "Stores live stream sessions."
+    },
+    "uploads/{uploadId}": {
+      "schema": { "$ref": "#/entities/Upload" },
+      "description": "Stores file upload metadata."
     }
   }
 }

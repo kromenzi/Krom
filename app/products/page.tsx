@@ -18,6 +18,24 @@ export default function ProductsPage() {
   const [isSearching, setIsSearching] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  useEffect(() => {
+    const fetchProducts = async () => {
+      setLoading(true);
+      try {
+        const querySnapshot = await getDocs(collection(db, 'products'));
+        const productData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        setProducts(productData);
+        setFilteredProducts(productData);
+      } catch (error) {
+        console.error('Error fetching products:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
+
   const handleSearch = (query: string) => {
     setSearchQuery(query);
     if (!query) {
@@ -42,6 +60,8 @@ export default function ProductsPage() {
       reader.readAsDataURL(file);
       reader.onloadend = async () => {
         const base64Image = reader.result as string;
+        if (!base64Image) return;
+        
         const ai = new GoogleGenAI({ apiKey: process.env.NEXT_PUBLIC_GEMINI_API_KEY! });
         
         const response = await ai.models.generateContent({
@@ -49,7 +69,7 @@ export default function ProductsPage() {
           contents: {
             parts: [
               { text: 'Identify the product in this image and return its name or SKU if possible. If you cannot identify it, return "unknown".' },
-              { inlineData: { mimeType: file.type, data: base64Image.split(',')[1] } }
+              { inlineData: { mimeType: file.type, data: (base64Image || '').split(',')[1] || '' } }
             ]
           }
         });

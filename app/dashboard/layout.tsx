@@ -4,20 +4,60 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { LayoutDashboard, Package, FileText, MessageSquare, Settings, Building2, Radio, Menu, X } from 'lucide-react';
-import { useState } from 'react';
-import AIAssistant from '@/components/AIAssistant';
+import { useState, useMemo } from 'react';
+import dynamic from 'next/dynamic';
+
+const AIAssistant = dynamic(() => import('@/components/AIAssistant'), {
+  ssr: false,
+});
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { profile, loading } = useAuth();
   const { t, dir } = useLanguage();
   const pathname = usePathname();
+  const router = useRouter();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
+  const isFactory = profile?.role === 'factory' || profile?.role === 'admin';
+
+  const navItems = useMemo(() => {
+    console.log('DEBUG: navItems being calculated, profile:', profile);
+    const items = [
+      { name: t('nav.dashboard'), href: '/dashboard', icon: LayoutDashboard },
+      { name: t('nav.rfq'), href: '/dashboard/rfqs', icon: FileText },
+      { name: 'Live', href: '/dashboard/live', icon: Radio },
+      ...(isFactory ? [
+        { name: t('nav.products'), href: '/dashboard/products', icon: Package },
+        { name: t('nav.profile'), href: '/dashboard/profile', icon: Building2 },
+      ] : [
+        { name: t('nav.suppliers'), href: '/dashboard/suppliers', icon: Building2 },
+      ]),
+      { name: t('nav.messages'), href: '/dashboard/messages', icon: MessageSquare },
+      { name: t('nav.settings'), href: '/dashboard/settings', icon: Settings },
+      ...(profile?.role === 'admin' ? [
+        { name: t('admin.users'), href: '/dashboard/admin/users', icon: Settings },
+        { name: t('admin.factories'), href: '/dashboard/admin/factories', icon: Building2 },
+        { name: t('admin.products'), href: '/dashboard/admin/products', icon: Package },
+        { name: t('admin.rfqs'), href: '/dashboard/admin/rfqs', icon: FileText },
+      ] : []),
+    ];
+    console.log('DEBUG: navItems:', items);
+    return items;
+  }, [t, isFactory, profile?.role, profile]);
+
   if (loading) {
-    return <div className="min-h-screen flex items-center justify-center bg-slate-50">{t('dashboard.loading')}</div>;
+    return (
+      <div className="min-h-screen flex flex-col bg-[#F8F9FA] animate-pulse">
+        <div className="h-16 bg-white border-b border-slate-100" />
+        <div className="flex-grow max-w-7xl mx-auto w-full px-4 py-8 flex gap-8">
+          <div className="hidden lg:block w-72 h-[600px] bg-white rounded-3xl" />
+          <div className="flex-grow h-[600px] bg-white rounded-3xl" />
+        </div>
+      </div>
+    );
   }
 
   if (!profile) {
@@ -34,30 +74,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     );
   }
 
-  const isFactory = profile.role === 'factory' || profile.role === 'admin';
-
-  const navItems = [
-    { name: t('nav.dashboard'), href: '/dashboard', icon: LayoutDashboard },
-    { name: t('nav.rfq'), href: '/dashboard/rfqs', icon: FileText },
-    { name: t('nav.live'), href: '/dashboard/live', icon: Radio },
-    ...(isFactory ? [
-      { name: t('nav.products'), href: '/dashboard/products', icon: Package },
-      { name: t('nav.profile'), href: '/dashboard/profile', icon: Building2 },
-    ] : [
-      { name: t('nav.suppliers'), href: '/dashboard/suppliers', icon: Building2 },
-    ]),
-    { name: t('nav.messages'), href: '/dashboard/messages', icon: MessageSquare },
-    { name: t('nav.settings'), href: '/dashboard/settings', icon: Settings },
-    ...(profile.role === 'admin' ? [
-      { name: t('admin.users'), href: '/dashboard/admin/users', icon: Settings },
-      { name: t('admin.factories'), href: '/dashboard/admin/factories', icon: Building2 },
-      { name: t('admin.products'), href: '/dashboard/admin/products', icon: Package },
-      { name: t('admin.rfqs'), href: '/dashboard/admin/rfqs', icon: FileText },
-    ] : []),
-  ];
-
   return (
-    <div className={`min-h-screen flex flex-col bg-[#F8F9FA] relative overflow-hidden`} dir={dir}>
+    <div className={`min-h-screen flex flex-col bg-[#F8F9FA] relative`} dir={dir}>
       {/* Subtle Pattern Overlay */}
       <div className="fixed inset-0 pointer-events-none opacity-[0.03] z-0" style={{ backgroundImage: 'radial-gradient(#059669 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
       
@@ -67,7 +85,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       <div className="flex-grow max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Mobile Sidebar Toggle */}
-          <div className="lg:hidden flex items-center justify-between bg-white p-4 rounded-2xl shadow-sm border border-slate-200 mb-4">
+          <div className="lg:hidden flex items-center justify-between bg-white p-4 rounded-2xl shadow-sm border border-slate-200 mb-4 z-20">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold shadow-lg shadow-emerald-200">
                 {profile.displayName?.charAt(0) || profile.email.charAt(0).toUpperCase()}
@@ -87,7 +105,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
           {/* Sidebar */}
           <aside className={`${isSidebarOpen ? 'block' : 'hidden'} lg:block w-full lg:w-72 flex-shrink-0`}>
-            <div className="bg-white rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-100 overflow-hidden sticky top-24">
+            <div className="bg-white rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-100 sticky top-24">
               <div className="hidden lg:block p-8 border-b border-slate-50 bg-gradient-to-br from-slate-50 to-white">
                 <div className="flex flex-col items-center text-center gap-4">
                   <div className="relative">
@@ -111,8 +129,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                     <Link
                       key={item.href}
                       href={item.href}
-                      onClick={() => setIsSidebarOpen(false)}
-                      className={`flex items-center gap-4 px-4 py-3.5 rounded-2xl text-sm font-semibold transition-all duration-200 group ${
+                      className={`flex w-full items-center gap-4 px-4 py-3.5 rounded-2xl text-sm font-semibold transition-all duration-200 group ${
                         isActive 
                           ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-100 translate-x-1' 
                           : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'

@@ -51,8 +51,8 @@ export default function FactoryProfileDashboard() {
             email: data.email || '',
             yearEstablished: data.yearEstablished || '',
             employeeCount: data.employeeCount || '',
-            certifications: data.certifications ? data.certifications.join(', ') : '',
-            capabilities: data.capabilities ? data.capabilities.join(', ') : '',
+            certifications: Array.isArray(data.certifications) ? data.certifications.join(', ') : '',
+            capabilities: Array.isArray(data.capabilities) ? data.capabilities.join(', ') : '',
             logo: data.logo || '',
             banner: data.banner || '',
           });
@@ -88,8 +88,8 @@ export default function FactoryProfileDashboard() {
     setSuccess(false);
     
     try {
-      const certificationsArray = formData.certifications.split(',').map(s => s.trim()).filter(Boolean);
-      const capabilitiesArray = formData.capabilities.split(',').map(s => s.trim()).filter(Boolean);
+      const certificationsArray = (formData.certifications || '').split(',').map(s => s.trim()).filter(Boolean);
+      const capabilitiesArray = (formData.capabilities || '').split(',').map(s => s.trim()).filter(Boolean);
       
       await updateDoc(doc(db, 'factories', profile.uid), {
         name: formData.name,

@@ -28,6 +28,7 @@ interface AuthContextType {
   loading: boolean;
   signInWithGoogle: (role?: UserRole) => Promise<void>;
   logout: () => Promise<void>;
+  updateProfile: (data: Partial<UserProfile>) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -36,6 +37,7 @@ const AuthContext = createContext<AuthContextType>({
   loading: true,
   signInWithGoogle: async () => {},
   logout: async () => {},
+  updateProfile: async () => {},
 });
 
 export const useAuth = () => useContext(AuthContext);
@@ -99,6 +101,26 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         };
         await setDoc(docRef, newProfile);
         setProfile(newProfile);
+
+        // If factory, create a factory profile document as well
+        if (role === 'factory') {
+          const factoryRef = doc(db, 'factories', currentUser.uid);
+          await setDoc(factoryRef, {
+            uid: currentUser.uid,
+            name: currentUser.displayName || 'New Factory',
+            companyName: currentUser.displayName || 'New Factory',
+            email: currentUser.email || '',
+            status: 'pending', // Needs admin approval
+            verified: false,
+            exportReady: false,
+            responseRate: '100%',
+            createdAt: new Date().toISOString(),
+          });
+        }
+      } else {
+        // Update existing profile with latest info from Google if needed
+        const existingData = docSnap.data() as UserProfile;
+        setProfile(existingData);
       }
     } catch (error: any) {
       if (error.code === 'auth/popup-closed-by-user') {
@@ -110,16 +132,29 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
+  const updateProfile = async (data: Partial<UserProfile>) => {
+    if (!user) return;
+    try {
+      const docRef = doc(db, 'users', user.uid);
+      await setDoc(docRef, data, { merge: true });
+      setProfile(prev => prev ? { ...prev, ...data } : null);
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      throw error;
+    }
+  };
+
   const logout = async () => {
     try {
       await signOut(auth);
+      setProfile(null);
     } catch (error) {
       console.error('Error signing out:', error);
     }
   };
 
   return (
-    <AuthContext.Provider value={{ user, profile, loading, signInWithGoogle, logout }}>
+    <AuthContext.Provider value={{ user, profile, loading, signInWithGoogle, logout, updateProfile }}>
       {children}
     </AuthContext.Provider>
   );
